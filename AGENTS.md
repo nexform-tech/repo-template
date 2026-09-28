@@ -89,7 +89,19 @@ Every commit message follows Conventional Commits:
 - **Say it out loud when a change still breaks consumers.** The version policy does not remove the obligation to inform: when a change breaks an existing consumer and no major was approved, the PR **Summary** must state it plainly — "breaks X for consumers; publishes as a minor under this policy" — so the user can still upgrade it to a major before merging. Never let a break ship as a silent minor.
 - **Never tag, publish, or edit releases by hand** — no `git tag`, `npm publish`, `twine upload`, `cargo publish`, `docker push`, or `gh release create`, no edits to version numbers or `CHANGELOG.md`, and no `@semantic-release/git` in `.releaserc.json` (the release job never commits to `<default-branch>`). The manifest version field (`package.json`, `pyproject.toml`, `Cargo.toml`) stays at its placeholder `0.0.0-semantic-release`: never edit it and never treat it as the current version — the git tag is the only source of truth.
 
-## 4. Required Tooling
+## 4. Documentation
+
+- **Every document opens with what it is and who it is for.** One sentence, at the top, before the first heading: what problem it solves and who should read it. No "Introduction" section that says nothing, no restating the title.
+- **Structure is scannable.** Sentence-case headings, no deeper than three levels. Sequential headings for step-by-step guides (`## 1. …`, `## 2. …`). Order follows the reader's task, not your discovery order.
+- **Write plainly and directly.** One idea per sentence; "you", active voice, imperative for instructions. Keep sentences short enough to read in one pass, wrap paragraphs around 80 columns, and leave each list item on a single line — soft line breaks in Markdown are rendering noise, so do not hard-wrap a bullet to look tidy. No marketing adjectives ("powerful", "seamless"), no "simply", no filler ("it should be noted that"). If a fact changes what the reader does, state it outright instead of implying it.
+- **Examples are concrete and copy-pasteable.** Code blocks carry a language tag. Commands run as written, with the working directory stated. Use real names in examples, not `foo`/`<something>`. Prefer one number over an adjective: "returns in under 50 ms on the reference machine", not "fast".
+- **Avoid emoji.** The default is none: do not decorate headings, bullets, or status, and do not use one where a word or a table column is clearer. Use one only when it carries meaning that a word cannot state more clearly. Emoji do not survive a terminal, a diff, or a text-only reader, and they age badly.
+- **Warn against the mistakes the reader will make.** Where a tempting approach breaks, say so in a **do not** line and give the reason. This is what stops the next reader — or agent — from repeating it.
+- **Verify what you write.** A claim that was not tested is either reproduced with the exact command that produced it, or marked as unverified. Never present a belief as a fact.
+- **Documentation tracks the code.** A change that alters behavior updates the documentation in the same pull request. A rule that nobody can check — by test, linter, review or PR checklist — is noise; either make it checkable or drop it.
+- **Keep repository-specific facts out.** Test commands, tokens, version lines and local paths belong to the repository that has them, not to a synced standard.
+
+## 5. Required Tooling
 
 - **`git` is always required.** Use it for all version control operations. If it is missing, stop and tell the user to install it, including the command for their platform. Do not install tooling unless the user approves.
 - **`gh` is required whenever the repository has a GitHub remote** (detect with `git remote -v`). If it is missing, stop and tell the user to install it; the PR, issue, and release steps cannot be completed without it.
@@ -97,7 +109,7 @@ Every commit message follows Conventional Commits:
 - Do not call the GitHub API with `curl` or `wget` when `gh` can do the job.
 - Confirm authentication with `gh auth status` before GitHub operations; if unauthenticated, tell the user to run `gh auth login`.
 
-## 5. Reporting
+## 6. Reporting
 
 - State the branch, the commit hashes, and the PR URL when reporting completed work.
 - Report test commands and their results verbatim.
