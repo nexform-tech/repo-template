@@ -23,7 +23,7 @@ context.
 | `examples/publish.yml` | job fragment for publishing to a registry | pasted into a repository's `release.yml` when it publishes |
 | `examples/ci.yml` | minimal pull request gate: build and test | copied once into each repository |
 | `examples/package.yml` | job fragment that builds artifacts and attaches them to the release | pasted into a repository's `release.yml` when it ships artifacts |
-| `scripts/sync.sh` | syncs the copied files and opens a PR | run from here |
+| `scripts/sync.sh` | syncs the copied files and opens a PR (`--agents-only` for non-project repositories) | run from here |
 | `scripts/verify-release-bootstrap.sh` | checks the `0.x` bootstrap against real local repositories | run from here |
 
 ## Adopting in a new repository
@@ -54,6 +54,22 @@ it with squash. Then add the jobs the repository actually needs:
 The jobs are independent siblings, each gated on
 `needs.release.outputs.new_tag != ''`, so adding or deleting one never rewires the
 others. Repositories that ship nothing keep the stub exactly as synced.
+
+### Repositories that are not projects
+
+A repository that is **not a project** must be synced with `--agents-only`, which
+copies `AGENTS.md` and nothing else:
+
+```bash
+scripts/sync.sh --agents-only ../.github
+```
+
+`nexform-tech/.github` is the reason the flag exists. It holds the organization
+profile and community health files — `AGENTS.md`, `README.md`, `profile/` — and has
+neither `.releaserc.json` nor a release workflow. Without the flag the script would
+create both, i.e. install a release pipeline for a repository that ships no package.
+`AGENTS.md` is still canonical there, so it must keep being synced, just with the
+release files left alone.
 
 ## The first version is `0.1.0`
 
@@ -175,7 +191,9 @@ then reports `Contents: write`.
 - **Release pipeline** — nothing to do. Callers pin `@v1`, so a fix here reaches
   them as soon as `v1` moves. Repositories that pin a commit SHA instead get a
   bump PR from Dependabot.
-- **`AGENTS.md`** — re-run `scripts/sync.sh` and merge the resulting PR.
+- **`AGENTS.md`** — re-run `scripts/sync.sh` and merge the resulting PR. For
+  `nexform-tech/.github`, re-run `scripts/sync.sh --agents-only` instead, so the
+  profile repository does not acquire a release pipeline it has never had.
 
 ## The `v1` tag
 
