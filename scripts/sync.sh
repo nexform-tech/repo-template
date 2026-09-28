@@ -63,9 +63,23 @@ git -C "$TARGET" push -u origin "$BRANCH" --force-with-lease
 
 if (cd "$TARGET" && gh pr create \
   --title "chore: sync repository standards" \
-  --body "Automated sync from the repo-template repository: \`AGENTS.md\` is canonical there, and any missing release configuration was added.
+  --body "## Summary
 
-Review the diff and merge with squash."); then
+Automated sync from \`nexform-tech/repo-template\`: \`AGENTS.md\` is canonical there and is overwritten with the canonical version. This merge publishes nothing, because both the commit message and this title are \`chore:\`.
+
+## Changes
+
+- \`AGENTS.md\` overwritten with the canonical version
+- \`.releaserc.json\` added only if it was missing, otherwise kept
+- \`.github/workflows/release.yml\` added only if it was missing, otherwise kept
+
+## Testing
+
+Rules and release configuration only, so no code changed and no test suite is affected. If the diff also carries local edits, run this repository's own test command before merging.
+
+## Issues
+
+None. Merge with squash and delete the source branch."); then
   :
 else
   echo "note: no pull request created (one may already be open); the branch was pushed"
