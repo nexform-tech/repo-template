@@ -8,6 +8,12 @@ name: Release
 # Node is only the runtime of the semantic-release tool; this workflow never
 # touches the project's own package.json or node_modules.
 #
+# An untagged repository starts on the 0.x line. semantic-release has no option for
+# the initial version and would publish 1.0.0, whatever the commit type, so this
+# workflow bootstraps the `v0.0.0` starting point itself before semantic-release
+# runs (see the `initial-version` input). That is the only tag created outside a
+# release, and it is never created by hand.
+#
 # Caller:
 #
 #   jobs:
@@ -24,6 +30,23 @@ name: Release
 
 on:
   workflow_call:
+    inputs:
+      # semantic-release cannot be told what the first version should be: with no
+      # tag at all it publishes 1.0.0, whatever the commit type. A pre-existing tag
+      # is the only lever, so this workflow creates one when the repository has
+      # none. The value is a plain version such as `0.0.0` (a leading `v` is
+      # accepted); the default tag format of semantic-release, `v${version}`, is
+      # applied, so a repository that overrides `tagFormat` must pass matching
+      # values. Set it to "" to keep the 1.0.0 default and let semantic-release
+      # decide.
+      initial-version:
+        description: >-
+          Version of the one-time tag created when the repository has no release
+          tag yet: "0.0.0" starts the 0.x line, so the first feat is 0.1.0. Pass
+          "" to skip the bootstrap and keep semantic-release's 1.0.0 first
+          release.
+        type: string
+        default: "0.0.0"
     outputs:
       new_tag:
         description: "Tag created by this run, or an empty string when nothing was released"
@@ -51,6 +74,38 @@ jobs:
         with:
           node-version: 22 # semantic-release 25 requires ^22.14.0 || >=24.10.0
 
+      # The one-time starting point. Without it semantic-release would publish
+      # 1.0.0 for this push; with `v0.0.0` on the root commit it publishes 0.1.0
+      # for the first feature instead. A no-op as soon as any release tag exists,
+      # so it can never move a repository that is already on a version line.
+      - name: Bootstrap the initial version tag
+        id: bootstrap
+        if: inputs.initial-version != ''
+        env:
+          INITIAL_VERSION: ${{ inputs.initial-version }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          # semantic-release's default tag format is `v${version}`.
+          tag="v${INITIAL_VERSION#v}"
+          if [[ ! "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "error: initial-version must look like 0.0.0 (or v0.0.0), got '${INITIAL_VERSION}'" >&2
+            exit 1
+          fi
+          if git tag --list 'v[0-9]*.[0-9]*.[0-9]*' | grep -q .; then
+            echo "a release tag already exists; nothing to bootstrap"
+            exit 0
+          fi
+          root="$(git rev-list --max-parents=0 HEAD | tail -n 1)"
+          git tag "$tag" "$root"
+          # The checkout above runs with persist-credentials: false, so the push
+          # has to authenticate explicitly.
+          server="${GITHUB_SERVER_URL#https://}"
+          git push "https://x-access-token:${GITHUB_TOKEN}@${server}/${GITHUB_REPOSITORY}.git" \
+            "refs/tags/${tag}"
+          echo "tag=${tag}" >> "$GITHUB_OUTPUT"
+          echo "bootstrapped ${tag} on the root commit ${root}"
+
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -61,9 +116,17 @@ jobs:
       # there is anything to publish.
       - name: Detect the new tag
         id: detect
+        env:
+          BOOTSTRAP_TAG: ${{ steps.bootstrap.outputs.tag }}
         run: |
           set -euo pipefail
           tag="$(git tag --points-at HEAD --list 'v[0-9]*.[0-9]*.[0-9]*' | sort -V | tail -1)"
+          # In a repository whose whole history is a single commit, the bootstrap
+          # tag sits on HEAD and semantic-release had nothing to release. That tag
+          # is not a release, so never report it as one.
+          if [[ -n "$BOOTSTRAP_TAG" && "$tag" == "v${BOOTSTRAP_TAG#v}" ]]; then
+            tag=""
+          fi
           echo "new_tag=$tag" >> "$GITHUB_OUTPUT"
           if [[ -n "$tag" ]]; then
             echo "released $tag"
