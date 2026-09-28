@@ -2,6 +2,8 @@
 
 Operating rules for agents working in this repository. They are mandatory, not advisory.
 
+Everything you write — commit messages, PRs, issues, documentation — is in English, following industry conventions, unless told otherwise.
+
 ## 1. Git Workflow
 
 These rules assume the repository is hosted on GitHub. Where it has no GitHub remote, the GitHub-specific steps (PRs, issues, releases) do not apply; branching, commit, and testing rules apply to every Git repository.
