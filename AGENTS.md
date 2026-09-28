@@ -35,6 +35,7 @@ Every commit message follows Conventional Commits:
 - `<footer>`: optional. Link issues (`Closes #123`) and mark breaking changes with `BREAKING CHANGE: <description>`.
 - One logical change per commit. Do not mix refactoring with behavior changes.
 - Never commit generated artifacts, secrets, credentials, or local config.
+- **Never sign your work.** No `Co-Authored-By:` trailers, no "Generated with <tool>", no badges or emoji in commits or PR bodies. A commit or PR records who is accountable, and that is the human or the repository owner, never the agent or the tool it ran on. `Signed-off-by:` is a separate legal certification and only the human may add it.
 
 ### Issues
 
