@@ -24,6 +24,7 @@ context.
 | `examples/ci.yml` | minimal pull request gate: build and test | copied once into each repository |
 | `examples/package.yml` | job fragment that builds artifacts and attaches them to the release | pasted into a repository's `release.yml` when it ships artifacts |
 | `scripts/sync.sh` | syncs the copied files and opens a PR | run from here |
+| `scripts/verify-release-bootstrap.sh` | checks the `0.x` bootstrap against real local repositories | run from here |
 
 ## Adopting in a new repository
 
@@ -53,6 +54,42 @@ it with squash. Then add the jobs the repository actually needs:
 The jobs are independent siblings, each gated on
 `needs.release.outputs.new_tag != ''`, so adding or deleting one never rewires the
 others. Repositories that ship nothing keep the stub exactly as synced.
+
+## The first version is `0.1.0`
+
+semantic-release has no option for the initial version: for a repository with no
+tag at all it publishes `1.0.0`, whatever the commit type. A pre-existing tag is
+the only lever, so `release.yml` creates `v0.0.0` on the root commit itself, once,
+before semantic-release runs.
+
+| First merge on the default branch | Result |
+|---|---|
+| `chore:`, `docs:`, `ci:` (the standards sync) | only the `v0.0.0` tag, no release |
+| `feat:` | `0.1.0` |
+| `fix:` | `0.0.1` |
+
+The bootstrap is a no-op as soon as any `vX.Y.Z` tag exists, so it can never move a
+repository that is already on a version line, and the bootstrapped tag is never
+reported as a release: `new_tag` stays empty and `publish`/`package` are skipped. A
+repository that must keep semantic-release's `1.0.0` first release passes
+`with: initial-version: ""`.
+
+Merge the standards before the first feature. In a repository whose history is a
+single commit, `v0.0.0` and the first `feat:` would be the same commit and
+semantic-release would have no commit range left to analyze; the integration PR is
+a `chore:` merge, so this only matters for a repository that skips that step.
+
+Two things `0.x` does not change:
+
+- **A breaking change still jumps to `1.0.0`.** `BREAKING CHANGE:` always produces
+  `major`, and `semver.inc("0.1.0", "major")` is `1.0.0`; it is not a way to keep
+  breaking changes in the `0.y.0` range.
+- **An already released repository cannot move back down.** Tags are history. Only
+  a repository that has never been published and has no consumers can reset its
+  version line, and only with the owner's approval.
+
+`scripts/verify-release-bootstrap.sh` reproduces all of this against local
+repositories.
 
 ## Releasing and publishing are separate
 
@@ -107,7 +144,9 @@ A sandbox repository exercised the whole flow end to end. Confirmed:
 
 - `chore:`, `docs:`, `ci:` merges release nothing and skip `publish`/`package`;
   `feat:` → minor, `fix:` → patch, `feat:` plus a `BREAKING CHANGE:` footer → major.
-- The first release of an untagged repository is `1.0.0`.
+- An untagged repository would release `1.0.0` first; the `v0.0.0` bootstrap the
+  workflow performs turns that into `0.1.0` for the first `feat:` and `0.0.1` for
+  the first `fix:` (see *The first version is `0.1.0`*).
 - Release notes are generated from the merged PR, and the `package` job's artifact
   is attached to the release.
 - The release job adds no commit to the default branch.

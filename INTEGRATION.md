@@ -104,8 +104,12 @@ gh release list
 gh api repos/{owner}/{repo}/releases/{id}/assets   # per-release endpoint, see gotcha 4
 ```
 
-- A repository with no tags yet gets **`1.0.0`** as its first release. To start at
-  `0.x` instead, push a `v0.0.0` tag once before the first feature merge.
+- An untagged repository starts on the `0.x` line: the first push bootstraps a
+  `v0.0.0` tag on the root commit, so the first `feat:` releases `0.1.0` and the
+  first `fix:` releases `0.0.1`. Nothing to do — the workflow creates that tag
+  itself; never create it by hand. A repository that must keep semantic-release's
+  `1.0.0` first release passes `with: initial-version: ""` instead, which skips the
+  bootstrap.
 - Confirm the release job added **no commit** to the default branch.
 - Confirm the expected artifact is attached, if the repository ships one.
 
@@ -125,7 +129,8 @@ gh api repos/{owner}/{repo}/releases/{id}/assets   # per-release endpoint, see g
 - [ ] `.github/workflows/ci.yml` with the real test command, no placeholder left
 - [ ] publish/package jobs added, or deliberately omitted
 - [ ] PR opened with a non-releasing, conventional title; CI green
-- [ ] after merge: a release is cut and any artifact is attached
+- [ ] after merge: `v0.0.0` is bootstrapped and no release is cut yet; the first
+      `feat:` or `fix:` merge cuts a release and attaches any artifact
 - [ ] the human has been told about branch protection and secrets
 
 ## Gotchas (all verified)
@@ -154,7 +159,8 @@ gh api repos/{owner}/{repo}/releases/{id}/assets   # per-release endpoint, see g
    tag is the only source of truth.
 7. **Never tag, publish or edit releases by hand.** No `git tag`, `npm publish`,
    `twine upload`, `cargo publish`, `docker push`, `gh release create`, and no hand
-   edits to versions or `CHANGELOG.md`.
+   edits to versions or `CHANGELOG.md`. The one tag that appears without a release,
+   the `v0.0.0` starting point, is created by the release workflow itself.
 8. **Do not edit `AGENTS.md` in this repository.** The template is the source of
    truth; `sync.sh` overwrites the copy on the next run. Rule changes belong in the
    template.

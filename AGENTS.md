@@ -86,7 +86,8 @@ Every commit message follows Conventional Commits:
 - The release job never commits to `<default-branch>`. Do not add `@semantic-release/git` to `.releaserc.json`.
 - Because nothing is committed back, the version field in the manifest (`package.json`, `pyproject.toml`, `Cargo.toml`) stays at its placeholder, `0.0.0-semantic-release`, and CI overwrites it only in the publish workspace. Never edit that field and never treat it as the current version; the git tag is the only source of truth.
 - **Never tag, publish, or edit releases by hand** — no `git tag`, `npm publish`, `twine upload`, `cargo publish`, `docker push`, or `gh release create`, and no hand edits to version numbers or `CHANGELOG.md`. The release workflow owns all of that, including the registry credentials.
-- A repository with no tag yet publishes `1.0.0` as its first release. To start at `0.x` instead, push a `v0.0.0` tag once before the first merge.
+- Repositories start on the `0.x` line. semantic-release has no option for the initial version and would publish `1.0.0` for the first release of a repository with no tag, whatever the commit type; the only lever is a pre-existing tag, so the `Release` workflow bootstraps `v0.0.0` on the root commit itself before it runs semantic-release. The first `feat:` then publishes `0.1.0` and the first `fix:` publishes `0.0.1`. Merge the standards before the first feature so that the bootstrap runs first, and never create that tag by hand. A repository that must keep semantic-release's `1.0.0` first release passes `initial-version: ""` to the reusable workflow, which skips the bootstrap.
+- `0.x` does not soften a breaking change: `BREAKING CHANGE:` always produces `major`, and `semver.inc("0.1.0", "major")` is `1.0.0`. Do not use `0.x` to keep breaking changes in the `0.y.0` range.
 
 ## 4. Required Tooling
 
