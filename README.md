@@ -81,9 +81,12 @@ a `chore:` merge, so this only matters for a repository that skips that step.
 
 Two things `0.x` does not change:
 
-- **A breaking change still jumps to `1.0.0`.** `BREAKING CHANGE:` always produces
-  `major`, and `semver.inc("0.1.0", "major")` is `1.0.0`; it is not a way to keep
-  breaking changes in the `0.y.0` range.
+- **A major version needs the user's approval.** `BREAKING CHANGE:` and the `!`
+  shorthand are written only when the user asks for a major release; without that
+  approval the same change ships as an ordinary `feat:` or `fix:`, and the PR
+  summary has to say that it breaks consumers. An approved major taken from the
+  `0.x` line lands on `1.0.0` (`semver.inc("0.1.0", "major")`), ending the `0.x`
+  line, not on `0.y.0`.
 - **An already released repository cannot move back down.** Tags are history. Only
   a repository that has never been published and has no consumers can reset its
   version line, and only with the owner's approval.
