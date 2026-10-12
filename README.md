@@ -16,6 +16,7 @@ context.
 |---|---|---|
 | `INTEGRATION.md` | step-by-step adoption guide written for an agent | read and executed inside the target repository |
 | `AGENTS.md` | operating rules for agents | copied into each repository root |
+| `.github/labels.yml` | canonical issue and pull request labels | applied to a repository by `scripts/sync-labels.sh`; never copied, because labels live on GitHub |
 | `.releaserc.json` | semantic-release configuration | copied once, then extended per repository |
 | `.github/workflows/release.yml` | the release pipeline: version, tag, GitHub release — no build | **called** as a reusable workflow, never copied |
 | `.github/workflows/release-self.yml` | releases this repository itself | stays here |
@@ -24,6 +25,7 @@ context.
 | `examples/ci.yml` | minimal pull request gate: build and test | copied once into each repository |
 | `examples/package.yml` | job fragment that builds artifacts and attaches them to the release | pasted into a repository's `release.yml` when it ships artifacts |
 | `scripts/sync.sh` | syncs the copied files and opens a PR (`--agents-only` for non-project repositories) | run from here |
+| `scripts/sync-labels.sh` | applies the canonical labels to one or more repositories | run from here, or indirectly through `scripts/sync.sh` |
 | `scripts/verify-release-bootstrap.sh` | checks the `0.x` bootstrap against real local repositories | run from here |
 
 ## Adopting in a new repository
@@ -70,6 +72,42 @@ neither `.releaserc.json` nor a release workflow. Without the flag the script wo
 create both, i.e. install a release pipeline for a repository that ships no package.
 `AGENTS.md` is still canonical there, so it must keep being synced, just with the
 release files left alone.
+
+## Labels
+
+Labels are objects on GitHub rather than files, so nothing else in this repository
+reaches them: editing `.github/labels.yml` on its own changes nothing downstream.
+`scripts/sync-labels.sh` is what applies it.
+
+```bash
+scripts/sync-labels.sh nexform-tech/litearm-python nexform-tech/w1-python
+scripts/sync-labels.sh --dry-run --org nexform-tech
+```
+
+The run is idempotent: a missing label is created, an existing one is updated in
+place only once its color or description actually differs, so issues that already
+carry it keep it, and a run that finds nothing to do writes nothing. **It never
+deletes.** A label that exists downstream but not in the manifest is left alone,
+because deleting a label strips it from every issue that carries it, so retiring a
+name is a deliberate act rather than a side effect of editing this file.
+
+**Renaming a name here does not rename it downstream.** The old label stays behind.
+Rename it on GitHub instead (`gh label edit <old> --name <new>` in each repository,
+which keeps the label attached to its issues), and edit this file afterwards.
+
+Three things supply labels, and only the first of them is this script:
+
+| For | What supplies the labels |
+|---|---|
+| a repository that already exists | `scripts/sync-labels.sh` — nothing else reaches it |
+| a repository created from this template | the labels this template has at that moment |
+| any new repository in the organization | the organization's default labels, in organization settings |
+
+**Do not expect a template, or an organization default, to reach a repository that
+already exists** — neither does, which is why the script is the only way to fix the
+repositories you already have. Organization defaults apply to repositories created
+later, they replace GitHub's stock labels instead of extending them, and they have
+no API: they are a web setting, so a human has to set them by hand.
 
 ## The first version is `0.1.0`
 
@@ -194,6 +232,9 @@ then reports `Contents: write`.
 - **`AGENTS.md`** — re-run `scripts/sync.sh` and merge the resulting PR. For
   `nexform-tech/.github`, re-run `scripts/sync.sh --agents-only` instead, so the
   profile repository does not acquire a release pipeline it has never had.
+- **Labels** — re-run `scripts/sync-labels.sh` after editing `.github/labels.yml`.
+  There is no pull request to merge: the labels land on GitHub immediately, and
+  `scripts/sync.sh` applies them for the repository it syncs.
 
 ## The `v1` tag
 

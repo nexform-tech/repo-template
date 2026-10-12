@@ -1,0 +1,105 @@
+# Canonical labels, shared by every repository that follows this template.
+#
+# This file is the source of truth. Edit it here and never in a repository that
+# consumes it, then push it out with scripts/sync-labels.sh - which
+# scripts/sync.sh also calls while it syncs the other standards.
+#
+#   scripts/sync-labels.sh nexform-tech/litearm-python
+#   scripts/sync-labels.sh --org nexform-tech
+#
+# Format: name, color (6 hex digits, no leading '#'), description. The script
+# reads this file without a YAML library, so keep each description on one line
+# and keep the three keys in this order. Adding, renaming, or deleting a name
+# here is a real change to every repository: renaming orphans the old label,
+# and deleting one removes it from every issue that carries it, so the script
+# never deletes anything on its own.
+#
+# Prefixes are a naming convention, not a GitHub feature - GitHub lists labels
+# alphabetically, and the prefix is what keeps a category together in that list.
+
+# --------------------------------------------------------------------------
+# Priority: exactly one per issue. See AGENTS.md for the decision rule.
+# --------------------------------------------------------------------------
+- name: P0
+  color: b60205
+  description: "Now - outage, data loss, a security hole, or a release blocker"
+
+- name: P1
+  color: d93f0b
+  description: "Next - a supported flow is broken and there is no workaround"
+
+- name: P2
+  color: fbca04
+  description: "Scheduled - a real defect or requested change with a workaround"
+
+- name: P3
+  color: 0e8a16
+  description: "Later - cosmetic, cleanup, nice to have"
+
+# --------------------------------------------------------------------------
+# Kind: what the issue is, independent of how urgent it is
+# --------------------------------------------------------------------------
+- name: bug
+  color: d73a4a
+  description: "Something isn't working"
+
+- name: documentation
+  color: 0075ca
+  description: "Improvements or additions to documentation"
+
+- name: enhancement
+  color: a2eeef
+  description: "New feature or request"
+
+- name: question
+  color: d876e3
+  description: "Further information is requested"
+
+- name: accessibility
+  color: f143ab
+  description: "Barrier affecting people with disabilities"
+
+# --------------------------------------------------------------------------
+# Status: where the issue is in its life, and what it is waiting for
+# --------------------------------------------------------------------------
+- name: status: needs-triage
+  color: c5def5
+  description: "Not looked at yet - a maintainer still has to agree on priority and kind"
+
+- name: status: needs-info
+  color: d4c5f9
+  description: "Waiting for a reproduction or an answer from the reporter"
+
+- name: status: blocked
+  color: 5319e7
+  description: "Cannot move until something else lands"
+
+# --------------------------------------------------------------------------
+# Resolution: how the issue ended
+# --------------------------------------------------------------------------
+- name: released
+  color: ededed
+  description: "Shipped in a release"
+
+- name: duplicate
+  color: cfd3d7
+  description: "This issue or pull request already exists"
+
+- name: invalid
+  color: e4e669
+  description: "This doesn't seem right"
+
+- name: wontfix
+  color: ffffff
+  description: "This will not be worked on"
+
+# --------------------------------------------------------------------------
+# Contribution: how approachable the issue is
+# --------------------------------------------------------------------------
+- name: good first issue
+  color: 7057ff
+  description: "Good for newcomers"
+
+- name: help wanted
+  color: 008672
+  description: "Extra attention is needed"
