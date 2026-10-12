@@ -41,6 +41,14 @@ This creates the branch `chore/sync-repo-standards`, copies `AGENTS.md`, and add
 then pushes and opens a PR. Stay on that branch — the remaining steps add to the
 same PR.
 
+The same run also applies the canonical labels to the repository, before it touches
+the branch, because labels are objects on GitHub and cannot travel in a pull
+request. To sync them on their own, without a files sync:
+
+```bash
+../repo-template/scripts/sync-labels.sh <owner>/<repo>
+```
+
 What you now have: versioning, tagging and GitHub releases work on merge, with no
 further configuration. GitHub attaches the source tarball to every release itself.
 
@@ -124,6 +132,7 @@ gh api repos/{owner}/{repo}/releases/{id}/assets   # per-release endpoint, see g
 ## 8. Definition of done
 
 - [ ] `AGENTS.md` at the repository root, unmodified from the template
+- [ ] the canonical labels exist — `gh label list -R <owner>/<repo> --limit 100` lists `PO-P0` through `PO-P3`
 - [ ] `.releaserc.json` present
 - [ ] `.github/workflows/release.yml` calling the reusable workflow at a pinned ref
 - [ ] `.github/workflows/ci.yml` with the real test command, no placeholder left
@@ -167,6 +176,8 @@ gh api repos/{owner}/{repo}/releases/{id}/assets   # per-release endpoint, see g
 9. **The template's `v1` tag is movable.** It always points at the newest release,
    so callers get pipeline fixes automatically. Pin a commit SHA instead if that is
    not acceptable.
+10. **Labels do not travel with the files.** They are objects on GitHub, so `scripts/sync-labels.sh` is the only thing that reaches a repository that already exists. A repository created *from* the template gets a copy of whatever labels the template had at that moment (verified by comparing the sandbox repositories against the template; GitHub does not document it), and an organization's default labels cover repositories created later — those are a web setting with no API, they replace GitHub's stock labels instead of extending them, and changing them does nothing to a repository that already exists.
+11. **A label that a form or a rule names has to exist in that repository first.** For an issue template's `labels:` GitHub documents it as a precondition, and a name the repository does not have is not applied — so keep a form's labels inside `.github/labels.yml` and sync the repository before shipping the form.
 
 ## Updating later
 

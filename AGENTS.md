@@ -46,12 +46,21 @@ Every commit message follows Conventional Commits:
 - Create issues with `gh issue create`. Title: short, imperative, no trailing period.
   - Bug body: **Context**, **Expected**, **Actual**, **Reproduce**.
   - Feature body: **Problem**, **Proposal**, **Alternatives**.
-- Use only labels that already exist in the repository. Never invent or create labels.
+- Every issue you open carries exactly one priority label, because priority is what decides the order work starts in:
+  - `PO-P0` — outage, data loss, a security hole, or a release blocker: work starts now.
+  - `PO-P1` — a supported flow is broken and there is no workaround: next.
+  - `PO-P2` — a real defect or a requested change that has a workaround: scheduled normally.
+  - `PO-P3` — cosmetic, cleanup, nice to have: when there is room.
+  Priority says how soon someone has to look at it, not how big or how hard it is. When you hesitate, pick the calmer label and say why in the issue.
+- Add one kind label (`bug`, `enhancement`, `documentation`, `question`, plus `accessibility` when the barrier is specifically an accessibility one) and, when it applies, one status label (`status: needs-triage`, `status: needs-info`, `status: blocked`).
+- Use the label names defined in `.github/labels.yml`, verbatim. **Do not invent a label and do not create one by hand** — a label that exists in one repository and not in another makes the two issue lists impossible to compare.
+- **Do not skip a label because the repository lacks it.** Sync the repository instead (`scripts/sync-labels.sh <owner>/<repo>` from the template clone, see [`INTEGRATION.md`](INTEGRATION.md)) and say so in your report.
+- Component or subsystem labels are repository-specific: use one only if that repository already defines it, and never carry one over from another repository.
 - One issue per problem. Do not bundle unrelated work; link related issues instead.
 - Reference the issue in commits and in the PR body. Use a closing keyword (`Closes #123`, `Fixes #123`, `Resolves #123`) only when the PR fully resolves it; otherwise use `Refs #123`.
 - Let the merge close the issue. Do not close it by hand first; verify it is closed after merge.
 - A PR links to an issue and closes it automatically only when the PR targets `<default-branch>`; a PR targeting any other branch links nothing and closes nothing.
-- Never edit, close, reopen, reassign, or label an issue without explicit user approval. Never rewrite someone else's issue text; comment instead.
+- Never edit, close, reopen, or reassign an issue without explicit user approval. Never rewrite someone else's issue text; comment instead. You may set or change labels on issues you open yourself; on any other issue, only with explicit user approval.
 
 ### Pull Requests
 

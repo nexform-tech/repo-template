@@ -8,6 +8,9 @@
 # .releaserc.json and the release workflow are only created when missing, because
 # each repository extends them (publish plugins, secrets).
 #
+# Labels cannot be synced as a file, because they are objects on GitHub, so
+# scripts/sync-labels.sh applies .github/labels.yml to the repository directly.
+#
 # --agents-only copies AGENTS.md and nothing else. Use it for a repository that is
 # not a project and must never get a release pipeline of its own - the organization
 # profile repository (nexform-tech/.github) is the case this exists for. Without the
@@ -44,6 +47,11 @@ DEFAULT_BRANCH="$(cd "$TARGET" && gh repo view --json defaultBranchRef --jq .def
 [[ -n "$DEFAULT_BRANCH" ]] || die "cannot determine the default branch of $TARGET (does it have a GitHub remote?)"
 
 echo "syncing into $TARGET (default branch: $DEFAULT_BRANCH)"
+
+# Before the branch work, so that a run which finds the files already up to date
+# still carries the labels.
+"$TEMPLATE_DIR/scripts/sync-labels.sh" "$(cd "$TARGET" && gh repo view --json nameWithOwner --jq .nameWithOwner)"
+
 git -C "$TARGET" switch "$DEFAULT_BRANCH"
 git -C "$TARGET" pull --ff-only
 git -C "$TARGET" switch -C "$BRANCH"
