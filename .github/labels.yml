@@ -20,19 +20,19 @@
 # --------------------------------------------------------------------------
 # Priority: exactly one per issue. See AGENTS.md for the decision rule.
 # --------------------------------------------------------------------------
-- name: PO-P0
+- name: P0
   color: b60205
   description: "Now - outage, data loss, a security hole, or a release blocker"
 
-- name: PO-P1
+- name: P1
   color: d93f0b
   description: "Next - a supported flow is broken and there is no workaround"
 
-- name: PO-P2
+- name: P2
   color: fbca04
   description: "Scheduled - a real defect or requested change with a workaround"
 
-- name: PO-P3
+- name: P3
   color: 0e8a16
   description: "Later - cosmetic, cleanup, nice to have"
 

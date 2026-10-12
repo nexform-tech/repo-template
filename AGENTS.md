@@ -47,10 +47,10 @@ Every commit message follows Conventional Commits:
   - Bug body: **Context**, **Expected**, **Actual**, **Reproduce**.
   - Feature body: **Problem**, **Proposal**, **Alternatives**.
 - Every issue you open carries exactly one priority label, because priority is what decides the order work starts in:
-  - `PO-P0` — outage, data loss, a security hole, or a release blocker: work starts now.
-  - `PO-P1` — a supported flow is broken and there is no workaround: next.
-  - `PO-P2` — a real defect or a requested change that has a workaround: scheduled normally.
-  - `PO-P3` — cosmetic, cleanup, nice to have: when there is room.
+  - `P0` — outage, data loss, a security hole, or a release blocker: work starts now.
+  - `P1` — a supported flow is broken and there is no workaround: next.
+  - `P2` — a real defect or a requested change that has a workaround: scheduled normally.
+  - `P3` — cosmetic, cleanup, nice to have: when there is room.
   Priority says how soon someone has to look at it, not how big or how hard it is. When you hesitate, pick the calmer label and say why in the issue.
 - Add one kind label (`bug`, `enhancement`, `documentation`, `question`, plus `accessibility` when the barrier is specifically an accessibility one) and, when it applies, one status label (`status: needs-triage`, `status: needs-info`, `status: blocked`).
 - Use the label names defined in `.github/labels.yml`, verbatim. **Do not invent a label and do not create one by hand** — a label that exists in one repository and not in another makes the two issue lists impossible to compare.

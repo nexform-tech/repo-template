@@ -132,7 +132,7 @@ gh api repos/{owner}/{repo}/releases/{id}/assets   # per-release endpoint, see g
 ## 8. Definition of done
 
 - [ ] `AGENTS.md` at the repository root, unmodified from the template
-- [ ] the canonical labels exist — `gh label list -R <owner>/<repo> --limit 100` lists `PO-P0` through `PO-P3`
+- [ ] the canonical labels exist — `gh label list -R <owner>/<repo> --limit 100` lists `P0` through `P3`
 - [ ] `.releaserc.json` present
 - [ ] `.github/workflows/release.yml` calling the reusable workflow at a pinned ref
 - [ ] `.github/workflows/ci.yml` with the real test command, no placeholder left

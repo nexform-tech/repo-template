@@ -91,6 +91,10 @@ deletes.** A label that exists downstream but not in the manifest is left alone,
 because deleting a label strips it from every issue that carries it, so retiring a
 name is a deliberate act rather than a side effect of editing this file.
 
+**Renaming a name here does not rename it downstream.** The old label stays behind.
+Rename it on GitHub instead (`gh label edit <old> --name <new>` in each repository,
+which keeps the label attached to its issues), and edit this file afterwards.
+
 Three things supply labels, and only the first of them is this script:
 
 | For | What supplies the labels |
