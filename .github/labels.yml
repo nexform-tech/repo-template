@@ -55,10 +55,6 @@
   color: d876e3
   description: "Further information is requested"
 
-- name: accessibility
-  color: f143ab
-  description: "Barrier affecting people with disabilities"
-
 # --------------------------------------------------------------------------
 # Status: where the issue is in its life, and what it is waiting for
 # --------------------------------------------------------------------------
