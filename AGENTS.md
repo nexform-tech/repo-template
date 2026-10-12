@@ -52,7 +52,7 @@ Every commit message follows Conventional Commits:
   - `P2` — a real defect or a requested change that has a workaround: scheduled normally.
   - `P3` — cosmetic, cleanup, nice to have: when there is room.
   Priority says how soon someone has to look at it, not how big or how hard it is. When you hesitate, pick the calmer label and say why in the issue.
-- Add one kind label (`bug`, `enhancement`, `documentation`, `question`, plus `accessibility` when the barrier is specifically an accessibility one) and, when it applies, one status label (`status: needs-triage`, `status: needs-info`, `status: blocked`).
+- Add one kind label (`bug`, `enhancement`, `documentation`, `question`) and, when it applies, one status label (`status: needs-triage`, `status: needs-info`, `status: blocked`).
 - Use the label names defined in `.github/labels.yml`, verbatim. **Do not invent a label and do not create one by hand** — a label that exists in one repository and not in another makes the two issue lists impossible to compare.
 - **Do not skip a label because the repository lacks it.** Sync the repository instead (`scripts/sync-labels.sh <owner>/<repo>` from the template clone, see [`INTEGRATION.md`](INTEGRATION.md)) and say so in your report.
 - Component or subsystem labels are repository-specific: use one only if that repository already defines it, and never carry one over from another repository.
